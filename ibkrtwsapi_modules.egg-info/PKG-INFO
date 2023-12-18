@@ -6,12 +6,8 @@ Author: Diego Tamayo
 Author-email: diegowork2203@gmail.com
 License: MIT
 Keywords: interactive brokers api
-Platform: UNKNOWN
 Classifier: Development Status :: 3 - Alpha
 Classifier: Intended Audience :: Developers
 Classifier: Topic :: Software Development :: Build Tools
 Classifier: Programming Language :: Python :: 3.7
 License-File: LICENSE
-
-UNKNOWN
-
