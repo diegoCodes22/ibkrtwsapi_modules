@@ -1,3 +1,5 @@
+LICENSE
+README.md
 setup.py
 TWSIBAPI_MODULES/AccountInfo.py
 TWSIBAPI_MODULES/Contracts.py

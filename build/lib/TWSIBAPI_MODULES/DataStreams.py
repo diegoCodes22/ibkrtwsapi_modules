@@ -31,8 +31,9 @@ def reqCurrentPrice(CONN_VARS: list, contract: Contract) -> float:
 
 # ------------------------------------------------------------------------------------ #
 class HistoricalDataStream(EClient, EWrapper):
-    def __init__(self, contract: Contract, duration: str, bar_size: str, end_date: str = "", what_to_show: str = "TRADES",
-                 use_rth: int = 1):  # End date format: "20200601 12:00:00" %Y%m%d %H:%M:%S
+    def __init__(self, contract: Contract, duration: str, bar_size: str, end_date: str = "",
+                 what_to_show: str = "TRADES", use_rth: int = 1):
+        # End date format: "20200601 12:00:00" %Y%m%d %H:%M:%S
         EClient.__init__(self, self)
         self.contract: Contract = contract
         self.end_date: str = end_date
@@ -60,3 +61,24 @@ def reqHistoricalDataStream(CONN_VARS: list, contract: Contract, duration: str, 
     hds.connect(CONN_VARS[0], CONN_VARS[1], CONN_VARS[2])
     hds.run()
     return hds.data_stream
+
+
+def reqBarAtDate(CONN_VARS: list, contract: Contract, date: str) -> BarData:
+    data = HistoricalDataStream(contract=contract, duration="1 D", bar_size="1 day", end_date=date)
+    data.connect(CONN_VARS[0], CONN_VARS[1], CONN_VARS[2])
+    data.run()
+    return data.data_stream[0]
+
+
+def reqAllTimeHigh(CONN_VARS: list, contract: Contract) -> float:
+    data = HistoricalDataStream(contract=contract, duration="5 Y", bar_size="1 month")
+    data.connect(CONN_VARS[0], CONN_VARS[1], CONN_VARS[2])
+    data.run()
+    return max([bar.high for bar in data.data_stream])
+
+
+def reqAllTimeLow(CONN_VARS: list, contract: Contract) -> float:
+    data = HistoricalDataStream(contract=contract, duration="5 Y", bar_size="1 month")
+    data.connect(CONN_VARS[0], CONN_VARS[1], CONN_VARS[2])
+    data.run()
+    return min([bar.low for bar in data.data_stream])
