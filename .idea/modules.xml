@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../SPY_simple_swingtrader/.idea/SPY_simple_swingtrader.iml" filepath="$PROJECT_DIR$/../SPY_simple_swingtrader/.idea/SPY_simple_swingtrader.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../TWS1/.idea/TWS1.iml" filepath="$PROJECT_DIR$/../TWS1/.idea/TWS1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../TheDipper/.idea/TheDipper.iml" filepath="$PROJECT_DIR$/../TheDipper/.idea/TheDipper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/twsapimoduleslibrarybase.iml" filepath="$PROJECT_DIR$/.idea/twsapimoduleslibrarybase.iml" />
+    </modules>
+  </component>
+</project>
