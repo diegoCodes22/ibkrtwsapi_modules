@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='ibkrtwsapi_modules',
-    version='0.0.5',
+    version='0.0.6',
     packages=find_packages(),
     install_requires=['ibapi', 'pandas', 'ta'],
     author='Diego Tamayo',
