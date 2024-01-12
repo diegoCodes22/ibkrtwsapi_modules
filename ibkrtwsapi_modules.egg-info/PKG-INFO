@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: ibkrtwsapi-modules
-Version: 0.0.5
+Version: 0.0.10
 Summary: Modules for the Interactive Brokers API
 Author: Diego Tamayo
 Author-email: diegowork2203@gmail.com

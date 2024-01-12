@@ -4,6 +4,7 @@ from ibapi.contract import Contract
 from ibapi.common import TickAttrib, TickerId, BarData
 from ibapi.ticktype import TickType
 from typing import List
+from Exceptions import NoSecDef
 
 
 class CurrentPrice(EClient, EWrapper):
@@ -17,9 +18,14 @@ class CurrentPrice(EClient, EWrapper):
         self.reqMktData(orderId, self.contract, "", False, False, [])
 
     def tickPrice(self, reqId: TickerId, tickType: TickType, price: float, attrib: TickAttrib) -> None:
-        if tickType == 9:
+        if tickType == 4:
             self.current_price = price
             self.disconnect()
+
+    def error(self, reqId: TickerId, errorCode: int, errorString: str):
+        if errorCode == 200:
+            print(errorString)
+            raise NoSecDef
 
 
 def reqCurrentPrice(CONN_VARS: list, contract: Contract) -> float:
@@ -53,6 +59,14 @@ class HistoricalDataStream(EClient, EWrapper):
         self.reqHistoricalData(orderId, self.contract, self.end_date, self.duration, self.bar_size, self.what_to_show,
                                self.use_rth, 1, False, [])
 
+    def error(self, reqId: TickerId, errorCode: int, errorString: str):
+        if errorCode == 502:
+            print(f"Error: {errorString}")
+            exit(-1)
+        elif errorCode == 200:
+            print(f"{errorString}")
+            raise NoSecDef
+
 
 def reqHistoricalDataStream(CONN_VARS: list, contract: Contract, duration: str, bar_size: str, end_date: str = "",
                             what_to_show: str = "TRADES", use_rth: int = 1) -> List[BarData]:
@@ -82,3 +96,4 @@ def reqAllTimeLow(CONN_VARS: list, contract: Contract) -> float:
     data.connect(CONN_VARS[0], CONN_VARS[1], CONN_VARS[2])
     data.run()
     return min([bar.low for bar in data.data_stream])
+
