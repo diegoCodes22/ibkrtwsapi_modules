@@ -1,6 +1,3 @@
-print("Fuck")
-
-
 class NoSecDef(Exception):
     print("No security definition could be found")
     exit(200)

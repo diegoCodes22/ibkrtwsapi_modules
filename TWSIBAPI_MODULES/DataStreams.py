@@ -4,7 +4,7 @@ from ibapi.contract import Contract
 from ibapi.common import TickAttrib, TickerId, BarData
 from ibapi.ticktype import TickType
 from typing import List
-from Exceptions import NoSecDef
+from TWSIBAPI_MODULES.exeptions_handler import NoSecDef, ConnError
 
 
 class CurrentPrice(EClient, EWrapper):
@@ -23,12 +23,19 @@ class CurrentPrice(EClient, EWrapper):
             self.disconnect()
 
     def error(self, reqId: TickerId, errorCode: int, errorString: str):
-        if errorCode == 200:
-            print(errorString)
+        if errorCode == 502:
+            raise ConnError
+        elif errorCode == 200:
             raise NoSecDef
 
 
+
 def reqCurrentPrice(CONN_VARS: list, contract: Contract) -> float:
+    """
+    :param CONN_VARS: Connection variables to connect to TWS or IBGateway
+    :param contract: ibapi Contract object
+    :return: Returns current (last) price for the specified contract
+    """
     cp = CurrentPrice(contract=contract)
     cp.connect(CONN_VARS[0], CONN_VARS[1], CONN_VARS[2])
     cp.run()
@@ -37,9 +44,16 @@ def reqCurrentPrice(CONN_VARS: list, contract: Contract) -> float:
 
 # ------------------------------------------------------------------------------------ #
 class HistoricalDataStream(EClient, EWrapper):
-    def __init__(self, contract: Contract, duration: str, bar_size: str, end_date: str = "",
+    def __init__(self, contract: Contract, bar_size: str, duration: str, end_date: str = "",
                  what_to_show: str = "TRADES", use_rth: int = 1):
-        # End date format: "20200601 12:00:00" %Y%m%d %H:%M:%S
+        """
+        :param contract: ibapi Contract object
+        :param end_date: Request's end date and time, must be in format %Y%m%d %H:%M:%S an empty string represents current date
+        :param duration: The amount of time to go back from the request's end_date
+        :param bar_size: Size of bars to be returned
+        :param what_to_show: Type of data to retrieve, see ibapi docs Historical Data Types
+        :param use_rth: 0 to fetch data outside of Regular Trading Hours, 1 to use RTH
+        """
         EClient.__init__(self, self)
         self.contract: Contract = contract
         self.end_date: str = end_date
@@ -60,16 +74,26 @@ class HistoricalDataStream(EClient, EWrapper):
                                self.use_rth, 1, False, [])
 
     def error(self, reqId: TickerId, errorCode: int, errorString: str):
+        print(f"{errorCode} {errorString}")
         if errorCode == 502:
-            print(f"Error: {errorString}")
-            exit(-1)
+            raise ConnError
         elif errorCode == 200:
-            print(f"{errorString}")
             raise NoSecDef
 
 
 def reqHistoricalDataStream(CONN_VARS: list, contract: Contract, duration: str, bar_size: str, end_date: str = "",
                             what_to_show: str = "TRADES", use_rth: int = 1) -> List[BarData]:
+    """
+    :param CONN_VARS: Connection variables to connect to TWS or IBGateway
+    :param contract: ibapi Contract object
+    :param end_date: Request's end date and time, must be in format %Y%m%d %H:%M:%S, an empty string represents current
+     date
+    :param duration: The amount of time to go back from the request's end_date
+    :param bar_size: Size of bars to be returned
+    :param what_to_show: Type of data to retrieve, see ibapi docs Historical Data Types
+    :param use_rth: 0 to fetch data outside of Regular Trading Hours, 1 to use RTH
+    :return: Returns a list containing BarData objects of the specified bar size for the given duration
+    """
     hds = HistoricalDataStream(contract=contract, duration=duration, bar_size=bar_size, end_date=end_date,
                                what_to_show=what_to_show, use_rth=use_rth)
     hds.connect(CONN_VARS[0], CONN_VARS[1], CONN_VARS[2])
@@ -78,6 +102,13 @@ def reqHistoricalDataStream(CONN_VARS: list, contract: Contract, duration: str, 
 
 
 def reqBarAtDate(CONN_VARS: list, contract: Contract, date: str) -> BarData:
+    """
+    :param CONN_VARS: Connection variables to connect to TWS or IBGateway
+    :param contract: ibapi Contract object
+    :param date: Date and time of the requested bar, must be in format %Y%m%d %H:%M:%S, an empty string represents current
+     date
+    :return: Returns a BarData object
+    """
     data = HistoricalDataStream(contract=contract, duration="1 D", bar_size="1 day", end_date=date)
     data.connect(CONN_VARS[0], CONN_VARS[1], CONN_VARS[2])
     data.run()
@@ -85,6 +116,11 @@ def reqBarAtDate(CONN_VARS: list, contract: Contract, date: str) -> BarData:
 
 
 def reqAllTimeHigh(CONN_VARS: list, contract: Contract) -> float:
+    """
+    :param CONN_VARS: Connection variables to connect to TWS or IBGateway
+    :param contract: ibapi Contract object
+    :return: Returns all-time high of the last 5 years.
+    """
     data = HistoricalDataStream(contract=contract, duration="5 Y", bar_size="1 month")
     data.connect(CONN_VARS[0], CONN_VARS[1], CONN_VARS[2])
     data.run()
@@ -92,6 +128,11 @@ def reqAllTimeHigh(CONN_VARS: list, contract: Contract) -> float:
 
 
 def reqAllTimeLow(CONN_VARS: list, contract: Contract) -> float:
+    """
+    :param CONN_VARS: Connection variables to connect to TWS or IBGateway
+    :param contract: ibapi Contract object
+    :return: Returns all-time low of the last 5 years.
+    """
     data = HistoricalDataStream(contract=contract, duration="5 Y", bar_size="1 month")
     data.connect(CONN_VARS[0], CONN_VARS[1], CONN_VARS[2])
     data.run()

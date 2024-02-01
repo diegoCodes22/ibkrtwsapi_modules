@@ -1,3 +1,2 @@
 ibapi
 pandas
-ta

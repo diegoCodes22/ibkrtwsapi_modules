@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name='ibkrtwsapi_modules',
-    version='0.0.10',
+    version='0.0.17',
     packages=find_packages(),
-    install_requires=['ibapi', 'pandas', 'ta'],
+    install_requires=['ibapi', 'pandas'],
     author='Diego Tamayo',
     author_email='diegowork2203@gmail.com',
     description='Modules for the Interactive Brokers API',
@@ -14,6 +14,6 @@ setup(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Build Tools',
-        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.11',
     ]
 )

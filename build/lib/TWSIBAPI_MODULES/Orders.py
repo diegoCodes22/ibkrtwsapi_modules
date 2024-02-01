@@ -4,7 +4,8 @@ from ibapi.contract import Contract
 from ibapi.common import OrderId, TickerId
 from ibapi.order import Order
 from ibapi.order_state import OrderState
-from Exceptions import NoSecDef
+from TWSIBAPI_MODULES import NoSecDef, ConnError
+from typing import Tuple
 
 
 # def lmt_order(order_id: int, action: str, quantity: int, price: float) -> Order:
@@ -24,7 +25,8 @@ class OrderProcess(EClient, EWrapper):
         EClient.__init__(self, self)
         self.contract = contract
         self.order = order
-        self.fill = 0
+        self.fill = 0.
+        self.commission = 0.
 
     def nextValidId(self, orderId: int):
         self.reqContractDetails(orderId, self.contract)
@@ -33,23 +35,26 @@ class OrderProcess(EClient, EWrapper):
         self.placeOrder(reqId, contract, self.order)
 
     def openOrder(self, orderId: OrderId, contract: Contract, order: Order, orderState: OrderState):
-        print(f"OPEN ORDER: {contract.symbol} {order.action} {orderState.status} {orderState.commission}", end="\n\n")
+        self.commission = orderState.commission
+        print(f"OPEN ORDER: {contract.symbol} {order.action} {orderState.status}")
 
     def orderStatus(self, orderId: OrderId, status: str, filled: float, remaining: float, avgFillPrice: float,
                     permId: int, parentId: int, lastFillPrice: float, clientId: int, whyHeld: str, mktCapPrice: float):
-        print(f"ORDER STATUS: Status: {status}\nFilled: {filled}\nFill price: {avgFillPrice}\n")
+        if filled > 0:
+            print(f"ORDER STATUS: Status: {status}\nFilled: {filled}\nFill price: {avgFillPrice}\n")
         if remaining == 0:
             self.fill = avgFillPrice
             self.disconnect()
 
     def error(self, reqId: TickerId, errorCode: int, errorString: str):
-        print(errorString)
-        if errorCode == 200:
+        if errorCode == 502:
+            raise ConnError
+        elif errorCode == 200:
             raise NoSecDef
 
 
-def place_order(CONN_VARS, contract: Contract, order: Order) -> float:
+def place_order(CONN_VARS, contract: Contract, order: Order) -> Tuple[float, float]:
     order_app = OrderProcess(contract, order)
     order_app.connect(CONN_VARS[0], CONN_VARS[1], CONN_VARS[2])
     order_app.run()
-    return order_app.fill
+    return order_app.fill, order_app.commission
