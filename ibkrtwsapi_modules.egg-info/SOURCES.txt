@@ -7,6 +7,7 @@ TWSIBAPI_MODULES/DataStreams.py
 TWSIBAPI_MODULES/Dataframes.py
 TWSIBAPI_MODULES/Orders.py
 TWSIBAPI_MODULES/__init__.py
+TWSIBAPI_MODULES/exceptions_handler.py
 TWSIBAPI_MODULES/helpers.py
 ibkrtwsapi_modules.egg-info/PKG-INFO
 ibkrtwsapi_modules.egg-info/SOURCES.txt

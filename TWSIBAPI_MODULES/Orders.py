@@ -4,7 +4,7 @@ from ibapi.contract import Contract
 from ibapi.common import OrderId, TickerId
 from ibapi.order import Order
 from ibapi.order_state import OrderState
-from TWSIBAPI_MODULES.exeptions_handler import NoSecDef, ConnError
+from TWSIBAPI_MODULES.exceptions_handler import exceptions_factory
 from typing import Tuple
 
 
@@ -47,10 +47,7 @@ class OrderProcess(EClient, EWrapper):
             self.disconnect()
 
     def error(self, reqId: TickerId, errorCode: int, errorString: str):
-        if errorCode == 502:
-            raise ConnError
-        elif errorCode == 200:
-            raise NoSecDef
+        exceptions_factory(errorCode)
 
 
 def place_order(CONN_VARS, contract: Contract, order: Order) -> Tuple[float, float]:

@@ -4,7 +4,7 @@ from ibapi.contract import Contract
 from ibapi.common import TickAttrib, TickerId, BarData
 from ibapi.ticktype import TickType
 from typing import List
-from TWSIBAPI_MODULES import NoSecDef, ConnError
+from TWSIBAPI_MODULES.exceptions_handler import exceptions_factory
 
 
 class CurrentPrice(EClient, EWrapper):
@@ -23,10 +23,7 @@ class CurrentPrice(EClient, EWrapper):
             self.disconnect()
 
     def error(self, reqId: TickerId, errorCode: int, errorString: str):
-        if errorCode == 502:
-            raise ConnError
-        elif errorCode == 200:
-            raise NoSecDef
+        exceptions_factory(errorCode)
 
 
 
@@ -74,11 +71,8 @@ class HistoricalDataStream(EClient, EWrapper):
                                self.use_rth, 1, False, [])
 
     def error(self, reqId: TickerId, errorCode: int, errorString: str):
-        print(f"{errorCode} {errorString}")
         if errorCode == 502:
-            raise ConnError
-        elif errorCode == 200:
-            raise NoSecDef
+            exceptions_factory(errorCode)
 
 
 def reqHistoricalDataStream(CONN_VARS: list, contract: Contract, duration: str, bar_size: str, end_date: str = "",
