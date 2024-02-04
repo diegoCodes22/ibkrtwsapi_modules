@@ -2,6 +2,7 @@ LICENSE
 README.md
 setup.py
 TWSIBAPI_MODULES/AccountInfo.py
+TWSIBAPI_MODULES/Configurations.py
 TWSIBAPI_MODULES/Contracts.py
 TWSIBAPI_MODULES/DataStreams.py
 TWSIBAPI_MODULES/Dataframes.py

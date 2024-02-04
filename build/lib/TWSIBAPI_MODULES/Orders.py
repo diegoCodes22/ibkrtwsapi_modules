@@ -6,6 +6,8 @@ from ibapi.order import Order
 from ibapi.order_state import OrderState
 from TWSIBAPI_MODULES.exceptions_handler import exceptions_factory
 from typing import Tuple
+from threading import Thread, Event
+from time import perf_counter, sleep
 
 
 # def lmt_order(order_id: int, action: str, quantity: int, price: float) -> Order:
@@ -40,11 +42,29 @@ class OrderProcess(EClient, EWrapper):
 
     def orderStatus(self, orderId: OrderId, status: str, filled: float, remaining: float, avgFillPrice: float,
                     permId: int, parentId: int, lastFillPrice: float, clientId: int, whyHeld: str, mktCapPrice: float):
+        event = Event()
+        init_time = perf_counter()
+        thread = Thread(target=self.cancel_conditions, args=(orderId, event, init_time))
+        thread.start()
+
         if filled > 0:
+            event.set()
             print(f"ORDER STATUS: Status: {status}\nFilled: {filled}\nFill price: {avgFillPrice}\n")
         if remaining == 0:
             self.fill = avgFillPrice
             self.disconnect()
+
+    def cancelOpenOrder(self, orderId: OrderId):
+        self.cancelOrder(orderId)
+        self.disconnect()
+
+    def cancel_conditions(self, order_id: int, event: Event, init_time: float, max_time: float = 3) -> None:
+        while not event.is_set():
+            if (perf_counter() - init_time) / 60 > max_time:
+                self.cancelOpenOrder(order_id)
+                break
+            else:
+                sleep(10)
 
     def error(self, reqId: TickerId, errorCode: int, errorString: str):
         exceptions_factory(errorCode)
