@@ -9,7 +9,7 @@ TWSIBAPI_MODULES/Dataframes.py
 TWSIBAPI_MODULES/Orders.py
 TWSIBAPI_MODULES/__init__.py
 TWSIBAPI_MODULES/exceptions_handler.py
-TWSIBAPI_MODULES/helpers.py
+TWSIBAPI_MODULES/utils.py
 ibkrtwsapi_modules.egg-info/PKG-INFO
 ibkrtwsapi_modules.egg-info/SOURCES.txt
 ibkrtwsapi_modules.egg-info/dependency_links.txt

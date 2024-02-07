@@ -23,6 +23,9 @@ from time import perf_counter, sleep
 
 
 class OrderProcess(EClient, EWrapper):
+    """
+    Class to handle the order placement process.
+    """
     def __init__(self, contract: Contract, order: Order):
         EClient.__init__(self, self)
         self.contract = contract
@@ -71,6 +74,13 @@ class OrderProcess(EClient, EWrapper):
 
 
 def place_order(CONN_VARS, contract: Contract, order: Order) -> Tuple[float, float]:
+    """
+    Places an order with TWS or IBGateway and returns the fill price and commission as a tuple.
+    :param CONN_VARS: TWS or IBGateway connection variables (found in Configurations objects)
+    :param contract: Contract of the security to be traded
+    :param order: Order object to be placed
+    :return: Tuple containing the fill price and commission
+    """
     order_app = OrderProcess(contract, order)
     order_app.connect(CONN_VARS[0], CONN_VARS[1], CONN_VARS[2])
     order_app.run()
